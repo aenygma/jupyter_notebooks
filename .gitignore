@@ -1,0 +1,5 @@
+# temp files
+*.sw?
+
+# temp dirs
+.ipynb_checkpoints/
