@@ -1,6 +1,11 @@
 /*
  * Point class. A GPoint is composed of two coordinates (x, y) and a text label
  */
+
+// XXX HACK. Until deps are requirejs kosher....
+var p5 = {};
+p5.Vector = Object;
+
 function GPoint() {
 	var x, y, label;
 
