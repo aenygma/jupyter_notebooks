@@ -75,19 +75,35 @@ mydefine('simple_cos',
                   'padding': '10px'}
               }
 
-              var sT = p.createElement('h3', t.t.name);
+              // Update function called when slider input changes.          
+              function updateCB(){
+                // update display value
+                sV.html(sC.value());
+                if(t.update !== undefined)
+                  t.update();
+              }
+
+              // Create Label for slider
+              var sT = p.createElement('h4', t.t.name);
               sT.position(t.x, t.y);
 
+              // Create Slider
               var sC = p.createSlider(t.c.start, t.c.end, t.c.default, 
                         t.c.increment);
               sC.position(t.x + 120, t.y);
+
+              // Create 
+              var sV = p.createElement('h5');
+              sV.position(700, t.y);
+              sV.html(sC.value());
 
               // apply default styles 
               //  for textbox
               for(var i in defs.tstyle){
                 sT.style(i, defs.tstyle[i]);
               }
-              //  for controls
+
+              //x for controls
               for(var i in defs.cstyle){
                 sC.style(i, defs.cstyle[i]);
               }
@@ -96,6 +112,17 @@ mydefine('simple_cos',
               for(var i in t.c.style){
                 sC.style(i, t.c.style[i]);
               }
+
+              // attach to dom if
+              if (t.parent !== undefined){
+                sT.parent(t.parent);
+                sC.parent(t.parent);
+                sV.parent(t.parent);
+              }
+
+              // apply update callback
+              sC.input(updateCB);
+
               return [sT, sC];
             }
           
@@ -109,47 +136,41 @@ mydefine('simple_cos',
           
               // create sliders
               //  amplitude
-/*  
-              var ampSliderTxt = p.createElement('h3', "Amplitude:");
-              ampSliderTxt.position(500, 0);
-              ampSlider = p.createSlider(0, 5, 1, 0.1);
-              ampSlider.position(ampSliderTxt.x, 0);
-              ampSlider.style('width', '200px');
-              ampSlider.style('position', 'relative');
-              ampSlider.style('margin', '10px');
-              ampSlider.style('padding', '10px');
-*/  
+
               var ampSliderTxt;
               [ampSliderTxt, ampSlider] = createMySlider({
                 't': {'name': 'Amplitude'},
                 'c': {'start': 0, 'end': 5, 'default': 1, 'increment': 0.1},
                 'x': 600, 
-                'y': 0
+                'y': 0,
+                'parent': controls_div,
+                'update': update
               });
-              ampSlider.input(update);
 
-              // attach/render
-              ampSlider.parent(controls_div);
-              ampSliderTxt.parent(controls_div);
-          
               //  frequency
-              freqSlider = p.createSlider(1, 10, 1, 0.1);
-              freqSlider.position(500, inputPadding);
-              freqSlider.style('width', '200px');
-              freqSlider.style('position', 'relative');
-              freqSlider.style('margin', '10px');
-              freqSlider.style('padding', '10px');
+              var freqSliderTxt;
+              [freqSliderTxt, freqSlider] = createMySlider({
+                't': {'name': 'Frequency'},
+                'c': {'start': 0, 'end': 10, 'default': 1, 'increment': 0.1},
+                'x': 600, 
+                'y': inputPadding,
+                'parent': controls_div,
+                
+              });
               freqSlider.input(update);
 
               //  phase
-              phaseSlider = p.createSlider(0, 2*Math.PI, 0, 0.1);
-              phaseSlider.position(500, 2*inputPadding);
-              phaseSlider.style('width', '200px');
-              phaseSlider.style('position', 'relative');
-              phaseSlider.style('margin', '10px');
-              phaseSlider.style('padding', '10px');
+              var phaseSliderTxt;
+              [phaseSliderTxt, phaseSlider] = createMySlider({
+                't': {'name': 'Phase'},
+                'c': {'start': 0, 'end': 2*Math.PI, 'default': 0, 
+                      'increment': 0.1},
+                'x': 600, 
+                'y': inputPadding*2,
+                'parent': controls_div
+              });
               phaseSlider.input(update);
- 
+
               // Prepare the points for the plot
               points = createPoints();
               console.log("points:", points);
