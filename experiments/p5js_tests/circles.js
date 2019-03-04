@@ -21,8 +21,7 @@ define('circles', ['d3'], function (d3){
 mydefine('simple_cos',
     ['p5', 'p5.dom', 'grafica', 'lodash'],
     function (p5, p5d, g, _) {
-      function draw(container, data){
-
+      function draw(container, data) {
         // Where to attach
         var sketch_div = document.createElement('div');
         sketch_div.setAttribute('id', 'cowabunga');
@@ -46,7 +45,7 @@ mydefine('simple_cos',
 
             var xValues = _.range(-2*Math.PI, Math.PI, 0.01);
 
-            var createPoints = function(){
+            var calcPoints = function(){
               let aVal = ampSlider.value();
               let fVal = freqSlider.value();
               let pVal = phaseSlider.value();
@@ -79,6 +78,7 @@ mydefine('simple_cos',
               function updateCB(){
                 // update display value
                 sV.html(sC.value());
+                // call callback if defined
                 if(t.update !== undefined)
                   t.update();
               }
@@ -99,17 +99,17 @@ mydefine('simple_cos',
 
               // apply default styles 
               //  for textbox
-              for(var i in defs.tstyle){
+              for(let i in defs.tstyle){
                 sT.style(i, defs.tstyle[i]);
               }
 
               //x for controls
-              for(var i in defs.cstyle){
+              for(let i in defs.cstyle){
                 sC.style(i, defs.cstyle[i]);
               }
 
               // apply defined styles
-              for(var i in t.c.style){
+              for(let i in t.c.style){
                 sC.style(i, t.c.style[i]);
               }
 
@@ -123,7 +123,7 @@ mydefine('simple_cos',
               // apply update callback
               sC.input(updateCB);
 
-              return [sT, sC];
+              return sC; //[sT, sC];
             }
           
             // Initial setup
@@ -136,9 +136,7 @@ mydefine('simple_cos',
           
               // create sliders
               //  amplitude
-
-              var ampSliderTxt;
-              [ampSliderTxt, ampSlider] = createMySlider({
+              ampSlider = createMySlider({
                 't': {'name': 'Amplitude'},
                 'c': {'start': 0, 'end': 5, 'default': 1, 'increment': 0.1},
                 'x': 600, 
@@ -148,59 +146,53 @@ mydefine('simple_cos',
               });
 
               //  frequency
-              var freqSliderTxt;
-              [freqSliderTxt, freqSlider] = createMySlider({
+              freqSlider = createMySlider({
                 't': {'name': 'Frequency'},
                 'c': {'start': 0, 'end': 10, 'default': 1, 'increment': 0.1},
                 'x': 600, 
                 'y': inputPadding,
                 'parent': controls_div,
+                'update': update
                 
               });
-              freqSlider.input(update);
 
               //  phase
-              var phaseSliderTxt;
-              [phaseSliderTxt, phaseSlider] = createMySlider({
+              phaseSlider = createMySlider({
                 't': {'name': 'Phase'},
                 'c': {'start': 0, 'end': 2*Math.PI, 'default': 0, 
                       'increment': 0.1},
                 'x': 600, 
                 'y': inputPadding*2,
-                'parent': controls_div
+                'parent': controls_div,
+                'update': update
               });
-              phaseSlider.input(update);
 
-              // Prepare the points for the plot
-              points = createPoints();
-              console.log("points:", points);
-          
               // Create a new plot and set its position on the screen
               plot = new GPlot(p);
+              // TODO link these with ampSlider min/max
               plot.setXLim(-2, 2);
               // TODO link these with ampSlider min/max
               plot.setYLim(-5, 5);
-
               plot.setPointSize(0);
               plot.setPos(25, 25);
           
               // Set the plot title and the axis labels
-              plot.setPoints(points);
               plot.getXAxis().setAxisLabelText("x axis");
               plot.getYAxis().setAxisLabelText("y axis");
               plot.setTitleText("A very simple example");
-          
-              // Draw it!
-              plot.defaultDraw();
-          
+
+              update();
+
+              // Disable draw()         
               p.noLoop();
             };
           
             var update = function () {
-          
-              points = createPoints();
-              console.log("points:", points);
+              // Prepare the points for the plot
+              points = calcPoints();
+              // Set points
               plot.setPoints(points);
+              // Draw it!
               plot.defaultDraw();
             }
 
