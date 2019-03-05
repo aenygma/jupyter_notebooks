@@ -18,10 +18,38 @@ define('circles', ['d3'], function (d3){
 });
 */
 
+require.config({
+  baseUrl: 'http://metis.local:31415/js/',
+  paths: {
+      'p5': 'p5.js/p5',
+      'p5.dom': 'p5.js/p5.dom',
+      'grafica': 'grafica.js/grafica',
+      'lodash' : 'lodash/lodash.min',
+    },
+  shim:{
+    'p5.dom': {
+      deps: ['p5']
+    }
+  }
+});
+
+mydefine = function (name, dependencies, module) {
+    // force the recreation of the module
+    // (when re-executing a cell)
+    console.log('mydef', name);
+    require.undef(name);
+
+    define(name, dependencies, module);
+};
+
 mydefine('simple_cos',
     ['p5', 'p5.dom', 'grafica', 'lodash'],
     function (p5, p5d, g, _) {
       function draw(container, data) {
+        console.log('p5:', p5);
+        console.log('gf', g);
+        console.log('lod', _);
+
         // Where to attach
         var sketch_div = document.createElement('div');
         sketch_div.setAttribute('id', 'cowabunga');
@@ -113,7 +141,7 @@ mydefine('simple_cos',
                 sC.style(i, t.c.style[i]);
               }
 
-              // attach to dom if
+              // attach to dom if specified
               if (t.parent !== undefined){
                 sT.parent(t.parent);
                 sC.parent(t.parent);
@@ -122,7 +150,6 @@ mydefine('simple_cos',
 
               // apply update callback
               sC.input(updateCB);
-
               return sC; //[sT, sC];
             }
           
@@ -170,15 +197,15 @@ mydefine('simple_cos',
               // Create a new plot and set its position on the screen
               plot = new GPlot(p);
               // TODO link these with ampSlider min/max
-              plot.setXLim(-2, 2);
+              plot.setXLim(-Math.PI, Math.PI);
               // TODO link these with ampSlider min/max
               plot.setYLim(-5, 5);
               plot.setPointSize(0);
               plot.setPos(25, 25);
           
               // Set the plot title and the axis labels
-              plot.getXAxis().setAxisLabelText("x axis");
-              plot.getYAxis().setAxisLabelText("y axis");
+              plot.getXAxis().setAxisLabelText("Time (s)");
+              plot.getYAxis().setAxisLabelText("Amplitude");
               plot.setTitleText("A very simple example");
 
               update();
